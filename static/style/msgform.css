@@ -1,0 +1,30 @@
+#msgform {
+  height: 5vh;
+  width: 100vw;
+  display: flex;
+  align-items: stretch;
+  max-height: 50px;
+  min-height: 50px;
+  overflow: hidden;
+}
+
+#textinput {
+  width: 95vw;
+  background-color: darkgray;
+  border: 0;
+  padding-left: 10px;
+}
+
+#sendbtn {
+  width: 5vw;
+  background-color: #04AA6D;
+  border: 0;
+  cursor: pointer;
+}
+
+#sendbtn:hover {
+  width: 5vw;
+  background-color: #03945f;
+  border: 0;
+  cursor: pointer;
+}
