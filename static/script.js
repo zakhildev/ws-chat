@@ -32,10 +32,19 @@ disconnectBtn.addEventListener('click', (e) => {
 
 setNameBtn.addEventListener('click', (e) => {
   e.preventDefault();
-  const newName = prompt(`Twoja aktualna nazwa: ${username}\nPodaj swoją nową nazwę:`);
-  if (newName == null | newName == '') return;
+  let newName = prompt(`Twoja aktualna nazwa: ${username}\nPodaj swoją nową nazwę:`);
+  newName = newName.trim();
+  if (newName.length > 16) {
+    alert("Nazwa nie może być dłuższa niż 16 znaków!");
+    return;
+  }
+  if (newName == null | newName == '') {
+    alert("Nazwa nie może być pusta!");
+    return;
+  };
   localStorage.setItem('username', newName);
   username = localStorage.getItem('username');
+  alert(`Nazwa została zmieniona na: ${username}`);
 });
 
 messageForm.addEventListener('submit', (e) => {
@@ -44,47 +53,45 @@ messageForm.addEventListener('submit', (e) => {
   if (msgContent.trim() == '') {
     return;
   }
+
+  if (msgContent.trim().length > 200) {
+    alert(`Wiadomość jest zbyt długa! (${msgContent.trim().length}/200)`);
+    return;
+  }
   messageInput.value = '';
   socket.emit('sendMsg', { author: username, content: msgContent.trim() });
 });
 
-socket.on('connect', () => {
+function createMsg(color, msg) {
   const newMsg = document.createElement('div');
   newMsg.className = 'chatmsg';
-  newMsg.style = 'color:green';
-  newMsg.textContent = 'Połączono z czatem!';
+  newMsg.style = `color:${color}`;
+  newMsg.textContent = msg;
+  return newMsg;
+}
+
+socket.on('connect', () => {
+  const newMsg = createMsg('green', 'Połączono z czatem!');
   messageBox.appendChild(newMsg);
   socket.emit('join', { name: username });
 });
 
 socket.on('disconnect', () => {
-  const newMsg = document.createElement('div');
-  newMsg.className = 'chatmsg';
-  newMsg.style = 'color:red';
-  newMsg.textContent = 'Rozłączono z czatem!';
+  const newMsg = createMsg('red', 'Rozłączono z czatem!');
   messageBox.appendChild(newMsg);
 });
 
 socket.on('message', (message) => {
-  const newMsg = document.createElement('div');
-  newMsg.className = 'chatmsg';
-  newMsg.style = 'color:white';
-  newMsg.textContent = `${message.author}: ${message.content}`;
+  const newMsg = createMsg('white', `${message.author}: ${message.content}`);
   messageBox.appendChild(newMsg);
 });
 
 socket.on('userJoin', (message) => {
-  const newMsg = document.createElement('div');
-  newMsg.className = 'chatmsg';
-  newMsg.style = 'color:lightgrey';
-  newMsg.textContent = `${message.name} dołączył(a) do czatu.`;
+  const newMsg = createMsg('lightgrey', `${message.name} dołączył(a) do czatu.`);
   messageBox.appendChild(newMsg);
 });
 
 socket.on('userLeave', (message) => {
-  const newMsg = document.createElement('div');
-  newMsg.className = 'chatmsg';
-  newMsg.style = 'color:lightgrey';
-  newMsg.textContent = `${message.name} opuścił(a) czat.`;
+  const newMsg = createMsg('lightgrey', `${message.name} opuścił(a) czat.`);
   messageBox.appendChild(newMsg);
 });
